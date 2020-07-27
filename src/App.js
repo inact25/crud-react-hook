@@ -1,7 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import AddCategory from "./components/UseCases/AddCategory";
 import EditCategory from "./components/UseCases/EditCategory";
 import GetCategory from "./components/tables/GetCategory";
+import {getAllCategories,postCategories,deleteCategories,putCategories} from "./apis/categories/categoriesApi";
+
 
 const App = () => {
 
@@ -34,7 +36,7 @@ const App = () => {
             categories_status: "A",
             price_date: "2020-07-08 18:32:00"
         },
-    ]
+    ] //default value if server not connected | Run execEwarungAPI for API
 
     const initialFormState = {
         categories_id: '',
@@ -51,18 +53,38 @@ const App = () => {
 
     const addCategory = category => {
         setCategories([...categories, category])
+        postCategories(category)
+            .then((categories) => {
+                console.log(categories)
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
     }
 
     const deleteCategory = id => {
         setEditing(false)
-
         setCategories(categories.filter(category => category.categories_id !== id))
+        deleteCategories(id)
+            .then((categories) => {
+                console.log(categories)
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
 
     const updateCategory = (id, updateCategories) => {
         setEditing(false)
-
         setCategories(categories.map(category => (category.categories_id === id ? updateCategories : category)))
+        deleteCategories(updateCategories)
+            .then((updateCategories) => {
+                console.log(updateCategories)
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
 
     const editRow = category => {
@@ -76,6 +98,19 @@ const App = () => {
             price_date: category.price_date
         })
     }
+;
+
+
+    useEffect(()=>{
+        getAllCategories()
+            .then((categories) => {
+                console.log(categories)
+                setCategories(categories)
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    },[])
 
     return (
         <div className="container">
